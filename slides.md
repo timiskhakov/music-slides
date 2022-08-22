@@ -212,7 +212,7 @@ expands into:
 <div style="font-size: 0.5em;">
 	<ul>
 		<li><code>x</code> — input array</li>
-		<li><code>x</code> — output array</li>
+		<li><code>y</code> — output array</li>
 		<li>for each out-of-range argument the result is <code>0</code>, e.g. <code>x(-1) = 0</code></li>
 	</ul>
 </div>
@@ -705,9 +705,24 @@ func main() {
 
 ### Cover on Johnny Cash's Hurt
 
-![hurt](hurt.jpg)
-
 <audio controls>
 	<source src="hurt.wav" type="audio/wav">
 </audio>
 
+#### Thank You!
+
+<div style="font-size: 0.5em;">
+	Contact<br>
+	<ul>
+		<li>Email: <a>timiskhakov@gmail.com</a></li>
+		<li>Blog: <a>https://timiskhakov.github.io</a></li>
+		<li>LinkedIn: <a>https://www.linkedin.com/in/timiskhakov</a></li>
+	</ul>
+	<br><br>
+	Links<br>
+	<ul>
+		<li>Code: <a>https://github.com/timiskhakov/music</a></li>
+		<li>Slides: <a>https://github.com/timiskhakov/music-slides</a></li>
+		<li>Post: <a>https://timiskhakov.github.io/posts/programming-guitar-music</a></li>
+	</ul>
+</div>
