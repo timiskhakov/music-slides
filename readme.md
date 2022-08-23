@@ -10,5 +10,5 @@
 Run the following command:
 
 ```shell
-mdslides --include wave.png --include wave-twice.png --include wave-high.png --include tune.wav --include ks.png --include string1b.wav --include string6b.wav --include eks.png --include eks-groups.png --include string1e.wav --include string6e.wav --include fretboard.jpg --include c-chord.wav --include c-chord-no-delay.wav --include arpeggio.wav --include hurt.wav slides.md
+mdslides --include wave.png --include wave-twice.png --include wave-high.png --include tune.wav --include ks.png --include string1b.wav --include string6b.wav --include eks.png --include eks-groups.png --include string1e.wav --include string6e.wav --include fretboard.jpg --include c-chord.wav --include c-chord-no-delay.wav --include arpeggio.wav --include hurt.wav --include eks-groups-math.png slides.md
 ```

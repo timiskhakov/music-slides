@@ -34,6 +34,7 @@ Timur Iskhakov
 - Extended Karplus-Strong algorithm
 - Sound in Go
 - Modeling a guitar
+- Performing a "cover" of Johnny Cash's *Hurt*
 
 [comment]: # (!!!)
 
@@ -193,310 +194,31 @@ Sixth string:
 		<li>Noise filters</li>
 		<li>Single sample filters</li>
 		<li>All samples filters</li>
-		<li>Each filter is represented as a Z-transform</li>
 	</ul>
 </div>
 
 [comment]: # (!!!)
 
-### Z-transform
+### It Escalated Quickly!
 
-General form:
-
-`$$ H(z) = 1 + z^{-1} $$`
-
-expands into:
-
-`$$ y(n) = x(n) + x(n -1) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>x</code> — input array</li>
-		<li><code>y</code> — output array</li>
-		<li>for each out-of-range argument the result is <code>0</code>, e.g. <code>x(-1) = 0</code></li>
-	</ul>
-</div>
+![eks-groups-math](eks-groups-math.png)
 
 [comment]: # (!!!)
 
-### Pick-Direction Lowpass — Math
+### Full Description
 
-`$$ H_p(z) = \dfrac{1 - p}{1 - pz^{-1}} $$`
-
-expands into:
-
-`$$ y(n) = (1 - p)x(n) + py(n - 1) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>p</code> affects the direction of the pick</li>
-		<li>Constraints: <code>0 <= p <= 0.9</code></li>
-	</ul>
-</div>
+https://timiskhakov.github.io/posts/programming-guitar-music
 
 [comment]: # (!!!)
 
-### Pick-Direction Lowpass — Impl
-
-```go
-const p = 0.9
-
-func pickDirectionLowpass(noise []float64) {
-  buffer := make([]float64, len(noise))
-  buffer[0] = (1 - p) * noise[0]
-  for i := 1; i < len(noise); i++ {
-    buffer[i] = (1-p)*noise[i] + p*buffer[i-1]
-  }
-  noise = buffer
-}
-```
-
-[comment]: # (!!!)
-
-### Pick-Position Comb - Math
-
-`$$ H_\beta(z) = 1 - z^{-int(\beta N + \frac 1 2)} $$`
-
-expands into:
-
-`$$ y(n) = x(n) - x(n - int(\beta N + \frac 1 2)) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>β</code> is responsible for the pick positiop</li>
-		<li>Constraints: <code>0 <= β <= 1</code></li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### Pick-Position Comb - Impl
-
-```go
-const b = 0.1
-
-func pickPositionComb(noise []float64) {
-  pick := int(b*float64(len(noise)) + 0.5)
-  if pick == 0 {
-    pick = len(noise)
-  }
-  buffer := make([]float64, len(noise))
-  for i := range noise {
-    if i-pick < 0 {
-      buffer[i] = noise[i]
-    } else {
-      buffer[i] = noise[i] - noise[i-pick]
-    }
-  }
-  noise = buffer
-}
-```
-
-[comment]: # (!!!)
-
-### Delay Line - Math
-
-`$$ H(z) = z^{-N} $$`
-
-expands into:
-
-`$$ y(n) = x(n - N) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>N</code> is the size of the noise array</li>
-		<li>Same formula in the basic Karplus-Strong</li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### Delay Line - Impl
-
-```go
-func delayLine(samples []float64, n, N int) float64 {
-  if n-N < 0 {
-    return 0
-  }
-  return samples[n-N]
-}
-```
-
-[comment]: # (!!!)
-
-### One-Zero String Damping - Math
-
-`$$ H_d(z) = (1 - S) + Sz^{-1} $$`
-
-expands into:
-
-`$$ y(n) = (1 - S)x(n) + Sx(n - 1) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>S</code> is called the stretching factor</li>
-		<li><code>S</code> affects on string decay</li>
-		<li>Constraints: <code>0 <= S <= 1</code></li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### One-Zero String Damping - Impl
-
-```go
-const s = 0.5 
-
-func oneZeroStringDamping(samples []float64, n, N int) float64 {
-  return (1-s)*delayLine(samples, n, N) + s*delayLine(samples, n-1, N)
-}
-```
-
-[comment]: # (!!!)
-
-### String-Stiffness Allpass - Math
-
-`$$ H_s(z) = z^{-K} \dfrac{\tilde{A}(z)}{A(z)} $$`
-
-expands into... something:
-
-[comment]: # (!!!)
-
-### First-Order String Tuning Allpass - Math
-
-`$$ H_p(z) = \dfrac{C + z^{-1}}{1 + Cz^{-1}} $$`
-
-expands into:
-
-`$$ y(n) = Cx(n) + x(n - 1) - Cy(n - 1) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>C</code> affects the string delay</li>
-		<li>Constraints: <code>-1 <= C <= 1</code></li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### First-Order String Tuning Allpass - Impl
-
-```go
-const c = 0.1
-
-func firstOrderStringTuningAllpass(samples []float64, n, N int) float64 {
-  return c*(oneZeroStringDamping(samples, n, N)-samples[n-1]) + oneZeroStringDamping(samples, n-1, N)
-}
-```
-
-[comment]: # (!!!)
-
-### Dynamic Level Lowpass - Math (1)
-
-`$$ H_L(z) = \dfrac{\tilde{\omega}}{1 + \tilde{\omega}} \dfrac{1 + z^{-1}}{1 - \dfrac{1 - \tilde{\omega}}{1 + \tilde{\omega}} z^{-1}} $$`
-
-expands into:
-
-`$$ y(n) = \dfrac{\tilde{\omega}}{1 + \tilde{\omega}} (x(n) + x(n - 1)) + \dfrac{1 - \tilde{\omega}}{1 + \tilde{\omega}} y(n - 1) $$`
-
-`$$ \tilde{\omega} = \pi \dfrac{f}{F_s} $$`
-
-[comment]: # (!!!)
-
-### Dynamic Level Lowpass - Math (2)
-
-`$$ x(n) = L^\frac 4 3 x(n) + (1 - L)y(n) $$`
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li><code>f</code> is frequency</li>
-		<li><code>Fs</code> is the sample rate</li>
-		<li><code>L</code> affects the level (volume)</li>
-		<li>Constraints: <code>0 <= L <= 1</code></li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### Dynamic Level Lowpass - Impl
-
-```go
-const l = 0.1
-
-func dynamicLevelLowpass(samples []float64, w float64) {
-  buffer := make([]float64, len(samples))
-  buffer[0] = w / (1 + w) * samples[0]
-  for i := 1; i < len(samples); i++ {
-    buffer[i] = w/(1+w)*(samples[i]+samples[i-1]) + (1-w)/(1+w)*buffer[i-1]
-  }
-
-  for i := range samples {
-    samples[i] = (math.Pow(l, 4/3) * samples[i]) + (1-l)*buffer[i]
-  }
-}
-```
-
-[comment]: # (!!!)
-
-### Putting It All Together
-
-```go
-func Synthesize(frequency float64, duration float64) []float64 {
-  noise := make([]float64, int(SampleRate/frequency))
-  for i := range noise {
-    noise[i] = rand.Float64()*2 - 1
-  }
-
-  pickDirectionLowpass(noise)
-  pickPositionComb(noise)
-
-  n := int(SampleRate*duration)
-  samples := make([]float64, n)
-  for i := range noise {
-    samples[i] = noise[i]
-  }
-
-  for i := len(noise); i < len(samples); i++ {
-    samples[i] = firstOrderStringTuningAllpass(samples, i, len(noise))
-  }
-
-  dynamicLevelLowpass(samples, math.Pi*frequency/SampleRate)
-
-  return samples
-```
-
-[comment]: # (!!! data-auto-animate)
-
-### Putting It All Together
-
-```go [11]
-func Synthesize(frequency float64, duration float64) []float64 {
-  noise := make([]float64, int(SampleRate/frequency))
-  for i := range noise {
-    noise[i] = rand.Float64()*2 - 1
-  }
-
-  pickDirectionLowpass(noise)
-  pickPositionComb(noise)
-
-  n := int(SampleRate*duration)
-  samples := make([]float64, n) // Don't do this!
-  for i := range noise {
-    samples[i] = noise[i]
-  }
-
-  for i := len(noise); i < len(samples); i++ {
-    samples[i] = firstOrderStringTuningAllpass(samples, i, len(noise))
-  }
-
-  dynamicLevelLowpass(samples, math.Pi*frequency/SampleRate)
-
-  return samples
-```
-
-Significant latency for real-time uses
-
-<!-- .element: data-id="code" -->
+### Benefits
+
+We gain control over:
+- String pick direction
+- The position of the pick
+- String decay
+- String delay
+- Sound loudness
 
 [comment]: # (!!!)
 
@@ -548,19 +270,6 @@ var frequencies = map[Note]float64{
 
 [comment]: # (!!!)
 
-### Package `beep`
-
-https://github.com/faiface/beep
-
-```go
-type Streamer interface {
-  Stream(samples [][2]float64) (int, bool)
-  Err() error
-}
-```
-
-[comment]: # (!!!)
-
 ### Sound Struct
 
 ```go
@@ -574,7 +283,24 @@ type synthesizer interface {
 }
 
 func newSound(synth synthesizer, note Note, duration float64) *sound {
-  return &sound{synth.Synthesize(frequencies[note], duration), 0}
+  frequency := frequencies[note]
+  return &sound{
+    totalSamples: synth.Synthesize(frequency, duration),
+    processed: 0,
+  }
+}
+```
+
+[comment]: # (!!!)
+
+### Package `beep`
+
+https://github.com/faiface/beep
+
+```go
+type Streamer interface {
+  Stream(samples [][2]float64) (int, bool)
+  Err() error
 }
 ```
 
@@ -703,7 +429,9 @@ func main() {
 
 [comment]: # (!!!)
 
-### Cover on Johnny Cash's Hurt
+## Performing a "Cover"
+
+[comment]: # (!!!)
 
 <audio controls>
 	<source src="hurt.wav" type="audio/wav">
