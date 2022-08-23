@@ -185,27 +185,13 @@ Sixth string:
 
 [comment]: # (!!!)
 
-### Groups
-
-![eks-groups](eks-groups.png)
-
-<div style="font-size: 0.5em;">
-	<ul>
-		<li>Noise filters</li>
-		<li>Single sample filters</li>
-		<li>All samples filters</li>
-	</ul>
-</div>
-
-[comment]: # (!!!)
-
-### It Escalated Quickly!
+### It Escalated Quickly
 
 ![eks-groups-math](eks-groups-math.png)
 
 [comment]: # (!!!)
 
-### Full Description
+### I Got You Covered
 
 https://timiskhakov.github.io/posts/programming-guitar-music
 
@@ -213,7 +199,7 @@ https://timiskhakov.github.io/posts/programming-guitar-music
 
 ### Benefits
 
-We gain control over:
+Extended version provides parameters for controlling:
 - String pick direction
 - The position of the pick
 - String decay
