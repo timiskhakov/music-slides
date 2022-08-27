@@ -21,7 +21,8 @@ Timur Iskhakov
 ### About
 
 - Software developer at Futurice (Helsinki)
-- Work with Go for 4 years coming from C#/.NET
+- Have been working with Go for 4 years
+- Coming from C#/.NET background
 - Blog tech stuff: https://timiskhakov.github.io
 - Love music
 
@@ -39,6 +40,15 @@ Timur Iskhakov
 [comment]: # (!!!)
 
 ## Sound in Computers
+
+[comment]: # (!!!)
+
+### What Is Sound
+
+Sound — a complex phenomenon that involves:
+- Propagation of acoustic waves
+- Pressure compressions
+- Reduction in air density
 
 [comment]: # (!!!)
 
@@ -72,6 +82,12 @@ Timur Iskhakov
 		<li>Measured in time units</li>
 	</ul>
 </div>
+
+[comment]: # (!!!)
+
+### Continuous Functions
+
+![wave](wave.png)
 
 [comment]: # (!!!)
 
@@ -206,7 +222,20 @@ Extended version provides parameters for controlling:
 - String delay
 - Sound loudness
 
-[comment]: # (!!!)
+[comment]: # (!!! data-auto-animate)
+
+### Benefits
+
+Extended version provides parameters for controlling:
+- String pick direction
+- The position of the pick
+- String decay
+- String delay
+- Sound loudness
+
+<img src="guitar.jpg" height="200px" />
+
+[comment]: # (!!! data-auto-animate)
 
 ### Results
 
@@ -373,13 +402,17 @@ func (g *Guitar) Chord(notes []Note, duration, delay float64) beep.Streamer {
 	<source src="c-chord.wav" type="audio/wav">
 </audio>
 
-If `delay` equals zero, we get a set of notes played together:
+`delay == 0`
+
+a set of notes played together
 
 <audio controls>
 	<source src="c-chord-no-delay.wav" type="audio/wav">
 </audio>
 
-If `delay` equals `duration / len(notes)`, we get arpeggio:
+`delay == duration / len(notes)`
+
+arpeggio
 
 <audio controls>
 	<source src="arpeggio.wav" type="audio/wav">
@@ -418,6 +451,8 @@ func main() {
 ## Performing a "Cover"
 
 [comment]: # (!!!)
+
+### Johnny Cash's *Hurt*
 
 <audio controls>
 	<source src="hurt.wav" type="audio/wav">
