@@ -235,6 +235,8 @@ Extended version provides parameters for controlling:
 
 <img src="guitar.jpg" height="200px" />
 
+<span style="font-size: 12px;">Picture source: <a>https://www.freepik.com/free-vector/vector-hand-drawn-icon-guitarra-isolated-white-background_20623004.htm</a></span>
+
 [comment]: # (!!! data-auto-animate)
 
 ### Results
