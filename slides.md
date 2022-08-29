@@ -35,7 +35,7 @@ Timur Iskhakov
 - Extended Karplus-Strong algorithm
 - Sound in Go
 - Modeling a guitar
-- Performing a "cover" of Johnny Cash's *Hurt*
+- "Cover" of Johnny Cash's *Hurt*
 
 [comment]: # (!!!)
 
@@ -109,10 +109,10 @@ Sound — a complex phenomenon that involves:
 
 `$$ y(n) = sin(2 \pi f n) $$`
 
-```go
+```go [0]
 const SampleRate = 44100
 
-func Synthesize(f float64, duration float64) []float64 {
+func Synthesize(f, duration float64) []float64 {
   size := float64(duration * SampleRate)
   samples := make([]float64, size)
   for i := range samples {
@@ -153,14 +153,15 @@ func Synthesize(f float64, duration float64) []float64 {
 
 ### Implementation
 
-```go
-func Synthesize(frequency float64, duration float64) []float64 {
+```go [0|8]
+func Synthesize(frequency, duration float64) []float64 {
   noise := make([]float64, int(SampleRate/frequency))
   for i := range noise {
     noise[i] = rand.Float64()*2 - 1
   }
 
-  samples := make([]float64, int(SampleRate*duration))
+  size := int(SampleRate*duration)
+  samples := make([]float64, size)
   for i := range noise {
     samples[i] = noise[i]
   }
@@ -222,22 +223,11 @@ Extended version provides parameters for controlling:
 - String delay
 - Sound loudness
 
-[comment]: # (!!! data-auto-animate)
-
-### Benefits
-
-Extended version provides parameters for controlling:
-- String pick direction
-- The position of the pick
-- String decay
-- String delay
-- Sound loudness
-
 <img src="guitar.jpg" height="200px" />
 
 <span style="font-size: 12px;">Picture source: <a>https://www.freepik.com/free-vector/vector-hand-drawn-icon-guitarra-isolated-white-background_20623004.htm</a></span>
 
-[comment]: # (!!! data-auto-animate)
+[comment]: # (!!!)
 
 ### Results
 
@@ -271,7 +261,7 @@ Sixth string:
 
 ### Note Struct
 
-```go
+```go [0]
 type Note struct {
   String int
   Fret   int
@@ -289,20 +279,21 @@ var frequencies = map[Note]float64{
 
 ### Sound Struct
 
-```go
+```go [1-4|6-8|10-17]
 type sound struct {
   totalSamples []float64
   processed    int
 }
 
 type synthesizer interface {
-  Synthesize(frequency float64, duration float64) []float64
+  Synthesize(frequency, duration float64) []float64
 }
 
 func newSound(synth synthesizer, note Note, duration float64) *sound {
   frequency := frequencies[note]
+  samples := synth.Synthesize(frequency, duration)
   return &sound{
-    totalSamples: synth.Synthesize(frequency, duration),
+    totalSamples: samples,
     processed: 0,
   }
 }
@@ -314,7 +305,7 @@ func newSound(synth synthesizer, note Note, duration float64) *sound {
 
 https://github.com/faiface/beep
 
-```go
+```go [0]
 type Streamer interface {
   Stream(samples [][2]float64) (int, bool)
   Err() error
@@ -325,10 +316,10 @@ type Streamer interface {
 
 ### Sound Methods
 
-```go
+```go [0|3|17|20-22]
 func (s *sound) Stream(samples [][2]float64) (int, bool) {
   if s.processed >= len(s.totalSamples) {
-    return 0, false
+    return 0, false // End of streaming
   }
 
   if len(s.totalSamples)-s.processed < len(samples) {
@@ -342,7 +333,7 @@ func (s *sound) Stream(samples [][2]float64) (int, bool) {
 
   s.processed += len(samples)
 
-  return len(samples), true
+  return len(samples), true // Keep going
 }
 
 func (s *sound) Err() error {
@@ -358,7 +349,7 @@ func (s *sound) Err() error {
 
 ### Guitar Struct
 
-```go
+```go [0]
 type Guitar struct {
   synth synthesizer
 }
@@ -373,7 +364,7 @@ func NewGuitar(synth synthesizer) *Guitar {
 
 ### Guitar Pluck
 
-```go
+```go [0]
 func (g *Guitar) Pluck(note Note, duration float64) beep.Streamer {
   return newSound(g.synth, note, duration)
 }
@@ -383,7 +374,7 @@ func (g *Guitar) Pluck(note Note, duration float64) beep.Streamer {
 
 ### Guitar Chord
 
-```go
+```go [0|2|4|5|6|9]
 func (g *Guitar) Chord(notes []Note, duration, delay float64) beep.Streamer {
   streamers := make([]beep.Streamer, len(notes))
   for i, note := range notes {
@@ -424,7 +415,7 @@ arpeggio
 
 ### Guitar Silence
 
-```go
+```go [0]
 func (g *Guitar) Silence(duration float64) beep.Streamer {
   return beep.Silence(int(g.sampleRate * duration))
 }
@@ -434,7 +425,7 @@ func (g *Guitar) Silence(duration float64) beep.Streamer {
 
 ### Playing Music
 
-```go
+```go [0]
 func main() {
   kse := karplusstrong.NewExtended()
   guitar := guitar.NewGuitar(kse)
@@ -450,17 +441,39 @@ func main() {
 
 [comment]: # (!!!)
 
-## Performing a "Cover"
+## "Cover"
 
 [comment]: # (!!!)
 
 ### Johnny Cash's *Hurt*
 
-<audio controls>
-	<source src="hurt.wav" type="audio/wav">
+![cover](cover.jpg)
+
+[comment]: # (!!! data-auto-animate)
+
+### Johnny Cash's *Hurt*
+
+![cover](cover.jpg)
+
+I know, I know, it barely reaches a MIDI level...
+
+[comment]: # (!!! data-auto-animate)
+
+### Johnny Cash's *Hurt*
+
+![cover](cover.jpg)
+
+I know, I know, it barely reaches a MIDI level...
+
+But come on, we just synthesized this melody out of nowhere!
+
+<audio controls autoplay>
+  <source src="hurt.wav" type="audio/wav">
 </audio>
 
-#### Thank You!
+[comment]: # (!!! data-auto-animate)
+
+### Thank You!
 
 <div style="font-size: 0.5em;">
 	Contact<br>
