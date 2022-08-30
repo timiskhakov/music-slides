@@ -122,7 +122,6 @@ func Synthesize(f, duration float64) []float64 {
 
   return samples
 }
-
 ```
 
 <audio controls>
@@ -447,35 +446,25 @@ func main() {
 
 ### Johnny Cash's *Hurt*
 
-![cover](cover.jpg)
+[comment]: # (!!! data-auto-animate)
+
+### Johnny Cash's *Hurt*
+
+I know, I know, it barely reaches a MIDI level...
+
+...but hey, we just created this melody out of nowhere!
 
 [comment]: # (!!! data-auto-animate)
 
 ### Johnny Cash's *Hurt*
 
-![cover](cover.jpg)
-
 I know, I know, it barely reaches a MIDI level...
 
-[comment]: # (!!! data-auto-animate)
+...but hey, we just created this melody out of nowhere!
 
-### Johnny Cash's *Hurt*
+#### Thank You!
 
-![cover](cover.jpg)
-
-I know, I know, it barely reaches a MIDI level...
-
-But come on, we just synthesized this melody out of nowhere!
-
-<audio controls autoplay>
-  <source src="hurt.wav" type="audio/wav">
-</audio>
-
-[comment]: # (!!! data-auto-animate)
-
-### Thank You!
-
-<div style="font-size: 0.5em;">
+<div style="font-size: 0.4em;">
 	Contact<br>
 	<ul>
 		<li>Email: <a>timiskhakov@gmail.com</a></li>
@@ -490,3 +479,9 @@ But come on, we just synthesized this melody out of nowhere!
 		<li>Post: <a>https://timiskhakov.github.io/posts/programming-guitar-music</a></li>
 	</ul>
 </div>
+
+<audio controls autoplay>
+  <source src="hurt.wav" type="audio/wav">
+</audio>
+
+[comment]: # (!!! data-auto-animate)
