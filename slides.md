@@ -1,9 +1,5 @@
-[comment]: # (Set the theme:)
 [comment]: # (THEME = white)
 [comment]: # (CODE_THEME = vs)
-[comment]: # (The list of themes is at https://revealjs.com/themes/)
-[comment]: # (The list of code themes is at https://highlightjs.org/)
-
 [comment]: # (controls: true)
 [comment]: # (keyboard: true)
 [comment]: # (markdown: { smartypants: true })
@@ -24,7 +20,7 @@ Timur Iskhakov
 - Have been working with Go for 4 years
 - Coming from C#/.NET background
 - Blog tech stuff: https://timiskhakov.github.io
-- Love music
+- Love music and programming for fun
 
 [comment]: # (!!!)
 
@@ -350,11 +346,12 @@ func (s *sound) Err() error {
 
 ```go [0]
 type Guitar struct {
-  synth synthesizer
+  sampleRate int
+  synth      synthesizer
 }
 
-func NewGuitar(synth synthesizer) *Guitar {
-  return &Guitar{synth}
+func NewGuitar(sampleRate int, synth synthesizer) *Guitar {
+  return &Guitar{sampleRate, synth}
 }
 
 ```
