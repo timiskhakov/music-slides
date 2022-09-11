@@ -31,7 +31,7 @@ Timur Iskhakov
 - Extended Karplus-Strong algorithm
 - Sound in Go
 - Modeling a guitar
-- "Cover" of Johnny Cash's *Hurt*
+- Performing a "Cover" of Johnny Cash's *Hurt*
 
 [comment]: # (!!!)
 
@@ -39,7 +39,7 @@ Timur Iskhakov
 
 [comment]: # (!!!)
 
-### What Is Sound
+### What Is Sound?
 
 Sound — a complex phenomenon that involves:
 - Propagation of acoustic waves
@@ -148,7 +148,7 @@ func Synthesize(f, duration float64) []float64 {
 
 ### Implementation
 
-```go [0|8]
+```go [0]
 func Synthesize(frequency, duration float64) []float64 {
   noise := make([]float64, int(SampleRate/frequency))
   for i := range noise {
@@ -437,7 +437,9 @@ func main() {
 
 [comment]: # (!!!)
 
-## "Cover"
+## Performaing a “Cover”
+
+![cover](cover.jpg)
 
 [comment]: # (!!!)
 
@@ -449,8 +451,6 @@ func main() {
 
 I know, I know, it barely reaches a MIDI level...
 
-...but hey, we just created this melody out of nowhere!
-
 [comment]: # (!!! data-auto-animate)
 
 ### Johnny Cash's *Hurt*
@@ -459,9 +459,15 @@ I know, I know, it barely reaches a MIDI level...
 
 ...but hey, we just created this melody out of nowhere!
 
-#### Thank You!
+<audio controls autoplay>
+  <source src="hurt.wav" type="audio/wav">
+</audio>
 
-<div style="font-size: 0.4em;">
+[comment]: # (!!! data-auto-animate)
+
+## Thank You!
+
+<div style="font-size: 0.75em;">
 	Contact<br>
 	<ul>
 		<li>Email: <a>timiskhakov@gmail.com</a></li>
@@ -477,8 +483,4 @@ I know, I know, it barely reaches a MIDI level...
 	</ul>
 </div>
 
-<audio controls autoplay>
-  <source src="hurt.wav" type="audio/wav">
-</audio>
-
-[comment]: # (!!! data-auto-animate)
+[comment]: # (!!!)
