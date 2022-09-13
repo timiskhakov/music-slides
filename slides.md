@@ -31,7 +31,7 @@ Timur Iskhakov
 - Extended Karplus-Strong algorithm
 - Sound in Go
 - Modeling a guitar
-- Performing a "Cover" of Johnny Cash's *Hurt*
+- Performing a "cover" of Johnny Cash's *Hurt*
 
 [comment]: # (!!!)
 
