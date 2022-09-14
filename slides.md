@@ -276,8 +276,8 @@ var frequencies = map[Note]float64{
 
 ```go [1-4|6-8|10-17]
 type sound struct {
-  totalSamples []float64
-  processed    int
+  samples  []float64
+  streamed int
 }
 
 type synthesizer interface {
@@ -286,10 +286,9 @@ type synthesizer interface {
 
 func newSound(synth synthesizer, note Note, duration float64) *sound {
   frequency := frequencies[note]
-  samples := synth.Synthesize(frequency, duration)
   return &sound{
-    totalSamples: samples,
-    processed: 0,
+    samples: synth.Synthesize(frequency, duration),
+    streamed: 0,
   }
 }
 ```
@@ -302,7 +301,7 @@ https://github.com/faiface/beep
 
 ```go [0]
 type Streamer interface {
-  Stream(samples [][2]float64) (int, bool)
+  Stream(buffer [][2]float64) (int, bool)
   Err() error
 }
 ```
@@ -312,23 +311,23 @@ type Streamer interface {
 ### Sound Methods
 
 ```go [0|3|17|20-22]
-func (s *sound) Stream(samples [][2]float64) (int, bool) {
-  if s.processed >= len(s.totalSamples) {
+func (s *sound) Stream(buffer [][2]float64) (int, bool) {
+  if s.streamed >= len(s.samples) {
     return 0, false // End of streaming
   }
 
-  if len(s.totalSamples)-s.processed < len(samples) {
-    samples = samples[:len(s.totalSamples)-s.processed]
+  if len(s.samples)-s.streamed < len(buffer) {
+    buffer = buffer[:len(s.samples)-s.streamed]
   }
 
-  for i := range samples {
-    samples[i][0] = s.totalSamples[s.processed+i]
-    samples[i][1] = s.totalSamples[s.processed+i]
+  for i := range buffer {
+    buffer[i][0] = s.samples[s.streamed+i]
+    buffer[i][1] = s.samples[s.streamed+i]
   }
 
-  s.processed += len(samples)
+  s.streamed += len(buffer)
 
-  return len(samples), true // Keep going
+  return len(buffer), true // Keep going
 }
 
 func (s *sound) Err() error {
